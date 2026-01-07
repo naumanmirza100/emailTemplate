@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Copy, Download, Eye, Code2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
+import { getFooterHTML } from '@/components/FooterSnippet';
 
 const SoftwareDevAIEmailTemplate = () => {
   const { toast } = useToast();
@@ -413,19 +414,7 @@ const SoftwareDevAIEmailTemplate = () => {
       </tr>
 
       <!-- FOOTER -->
-      <tr>
-        <td class="footer">
-          <div class="badge-container">
-            <img src="https://horizons-cdn.hostinger.com/90edfe98-bc38-4e5c-939e-3b2f88663c35/9257050b478191691d8ce4dd9e16f91f.png" alt="TopDevelopers Best Artificial Intelligence Companies 2025" class="badge-img">
-          </div>
-
-          <div style="font-size: 11px; color: #475569; line-height: 1.5;">
-            &copy; 2025 Laskon Technologies. All rights reserved.<br>
-            <a href="#" class="footer-link" style="font-size: 11px;">Unsubscribe</a> | 
-            <a href="#" class="footer-link" style="font-size: 11px;">Privacy Policy</a>
-          </div>
-        </td>
-      </tr>
+      ${getFooterHTML()}
     </table>
   </center>
 </body>

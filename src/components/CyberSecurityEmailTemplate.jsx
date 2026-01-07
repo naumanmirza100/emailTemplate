@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Copy, Download, Eye, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
+import { getFooterHTML } from '@/components/FooterSnippet';
 
 const CyberSecurityEmailTemplate = () => {
   const { toast } = useToast();
@@ -452,20 +453,7 @@ const CyberSecurityEmailTemplate = () => {
       </tr>
 
       <!-- FOOTER -->
-      <tr>
-        <td class="footer">
-          <div style="margin-bottom: 15px; color: #ffffff; font-weight: 600;">Laskon Technologies - Cybersecurity Division</div>
-          
-          <p style="margin-bottom: 15px;">
-            <a href="tel:+447577541394" class="footer-link">+44 7577 541394</a>
-            <span style="color: #334155;">|</span>
-            <a href="mailto:sales@laskontech.com" class="footer-link">sales@laskontech.com</a>
-            <span style="color: #334155;">|</span>
-            <a href="https://www.laskontech.com" class="footer-link">www.laskontech.com</a>
-          </p>
-          <p>Unit 1 Parliament Business Centre, Liverpool, UK</p>
-        </td>
-      </tr>
+      ${getFooterHTML()}
     </table>
   </center>
 </body>

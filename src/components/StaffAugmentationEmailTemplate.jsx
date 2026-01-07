@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Copy, Download, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
+import { getFooterHTML } from '@/components/FooterSnippet';
 
 const StaffAugmentationEmailTemplate = () => {
   const { toast } = useToast();
@@ -313,42 +314,42 @@ const StaffAugmentationEmailTemplate = () => {
                 <!-- Service 1 -->
                 <div class="service-card card-teams">
                   <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
-                    <tr><td class="service-card-header"><table width="100%" cellpadding="0" cellspacing="0"><tr><td width="68" class="icon-circle"><img src="https://horizons-cdn.hostinger.com/90edfe98-bc38-4e5c-939e-3b2f88663c35/c869e9447bb4842d0a797669d0563428.png" width="32" height="32" alt="Teams"></td><td class="service-card-title">Staff Augmentation & Teams</td></tr></table></td></tr>
+                    <tr><td class="service-card-header"><table width="100%" cellpadding="0" cellspacing="0"><tr><td width="68" class="icon-circle"><span style="font-size:30px; line-height:1; display:inline-block;">👥</span></td><td class="service-card-title">Staff Augmentation & Teams</td></tr></table></td></tr>
                     <tr><td class="service-card-content">Instantly scale your capacity with our pre-vetted experts. We provide individuals or build full-stack, autonomous teams tailored to your project goals.</td></tr>
                   </table>
                 </div>
                 <!-- Service 2 -->
                 <div class="service-card card-dev">
                    <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
-                    <tr><td class="service-card-header"><table width="100%" cellpadding="0" cellspacing="0"><tr><td width="68" class="icon-circle"><img src="https://horizons-cdn.hostinger.com/90edfe98-bc38-4e5c-939e-3b2f88663c35/43793f773663a76fd03698b6a378d389.png" width="32" height="32" alt="Code"></td><td class="service-card-title">Software Development</td></tr></table></td></tr>
+                    <tr><td class="service-card-header"><table width="100%" cellpadding="0" cellspacing="0"><tr><td width="68" class="icon-circle"><span style="font-size:30px; line-height:1; display:inline-block;">💻</span></td><td class="service-card-title">Software Development</td></tr></table></td></tr>
                     <tr><td class="service-card-content">From front-end to back-end and mobile, our engineers are proficient in the latest technologies to build robust, scalable, and high-performance applications.</td></tr>
                   </table>
                 </div>
                 <!-- Service 3 -->
                 <div class="service-card card-ai">
                    <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
-                    <tr><td class="service-card-header"><table width="100%" cellpadding="0" cellspacing="0"><tr><td width="68" class="icon-circle"><img src="https://horizons-cdn.hostinger.com/90edfe98-bc38-4e5c-939e-3b2f88663c35/b05537617b3543666b8c9d19a2e6f4a8.png" width="32" height="32" alt="AI"></td><td class="service-card-title">AI & Intelligent Automation</td></tr></table></td></tr>
+                    <tr><td class="service-card-header"><table width="100%" cellpadding="0" cellspacing="0"><tr><td width="68" class="icon-circle"><span style="font-size:30px; line-height:1; display:inline-block;">🤖</span></td><td class="service-card-title">AI & Intelligent Automation</td></tr></table></td></tr>
                     <tr><td class="service-card-content">Leverage our AI specialists for machine learning, data science, and process automation to unlock new efficiencies and drive intelligent business outcomes.</td></tr>
                   </table>
                 </div>
                 <!-- Service 4 -->
                 <div class="service-card card-cloud">
                    <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
-                    <tr><td class="service-card-header"><table width="100%" cellpadding="0" cellspacing="0"><tr><td width="68" class="icon-circle"><img src="https://horizons-cdn.hostinger.com/90edfe98-bc38-4e5c-939e-3b2f88663c35/3d17d5916065c71994b7c6c40685655a.png" width="32" height="32" alt="Cloud"></td><td class="service-card-title">Cloud & DevOps Engineering</td></tr></table></td></tr>
+                    <tr><td class="service-card-header"><table width="100%" cellpadding="0" cellspacing="0"><tr><td width="68" class="icon-circle"><span style="font-size:30px; line-height:1; display:inline-block;">☁️</span></td><td class="service-card-title">Cloud & DevOps Engineering</td></tr></table></td></tr>
                     <tr><td class="service-card-content">Accelerate your software delivery pipeline with our certified Cloud & DevOps engineers, specializing in CI/CD, infrastructure-as-code, and containerization.</td></tr>
                   </table>
                 </div>
                 <!-- Service 5 -->
                 <div class="service-card card-cyber">
                   <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
-                    <tr><td class="service-card-header"><table width="100%" cellpadding="0" cellspacing="0"><tr><td width="68" class="icon-circle"><img src="https://horizons-cdn.hostinger.com/90edfe98-bc38-4e5c-939e-3b2f88663c35/f6e21cf81c8b3684a0d8fd17f8b9134a.png" width="32" height="32" alt="Cyber"></td><td class="service-card-title">Cybersecurity Support</td></tr></table></td></tr>
+                    <tr><td class="service-card-header"><table width="100%" cellpadding="0" cellspacing="0"><tr><td width="68" class="icon-circle"><span style="font-size:30px; line-height:1; display:inline-block;">🛡️</span></td><td class="service-card-title">Cybersecurity Support</td></tr></table></td></tr>
                     <tr><td class="service-card-content">Protect your digital assets with our cybersecurity experts, offering services from threat analysis and vulnerability assessments to incident response.</td></tr>
                   </table>
                 </div>
                 <!-- Service 6 -->
                 <div class="service-card card-qa" style="margin-bottom:0;">
                    <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
-                    <tr><td class="service-card-header"><table width="100%" cellpadding="0" cellspacing="0"><tr><td width="68" class="icon-circle"><img src="https://horizons-cdn.hostinger.com/90edfe98-bc38-4e5c-939e-3b2f88663c35/c0704d9b43343468574169544719bb44.png" width="32" height="32" alt="QA"></td><td class="service-card-title">Quality Assurance & Testing</td></tr></table></td></tr>
+                    <tr><td class="service-card-header"><table width="100%" cellpadding="0" cellspacing="0"><tr><td width="68" class="icon-circle"><span style="font-size:30px; line-height:1; display:inline-block;">✅</span></td><td class="service-card-title">Quality Assurance & Testing</td></tr></table></td></tr>
                     <tr><td class="service-card-content">Ensure flawless user experiences with our dedicated QA engineers. We provide manual and automated testing services to guarantee your software is bug-free and performant.</td></tr>
                   </table>
                 </div>
@@ -493,13 +494,13 @@ const StaffAugmentationEmailTemplate = () => {
                   <table role="presentation" border="0" cellspacing="0" cellpadding="0" align="center">
                     <tr>
                       <td style="padding: 6px;">
-                        <a href="tel:+447466436417" class="cta-button cta-call"><img src="https://horizons-cdn.hostinger.com/90edfe98-bc38-4e5c-939e-3b2f88663c35/a3b118b63e265c71a396e959635f2991.png" alt="Phone icon" class="btn-icon">Call Us</a>
+                        <a href="tel:+447466436417" class="cta-button cta-call"><span style="display:inline-block; font-size:18px; line-height:1; vertical-align:middle; margin-right:10px;">📞</span>Call Us</a>
                       </td>
                       <td style="padding: 6px;">
-                         <a href="https://wa.me/447466436417" target="_blank" class="cta-button cta-whatsapp"><img src="https://horizons-cdn.hostinger.com/90edfe98-bc38-4e5c-939e-3b2f88663c35/1f1146700c0175d2789f76a59664d994.png" alt="WhatsApp icon" class="btn-icon">WhatsApp</a>
+                         <a href="https://wa.me/447466436417" target="_blank" class="cta-button cta-whatsapp"><span style="display:inline-block; font-size:18px; line-height:1; vertical-align:middle; margin-right:10px;">💬</span>WhatsApp</a>
                       </td>
                       <td style="padding: 6px;">
-                        <a href="mailto:sales@laskontech.com" class="cta-button cta-email"><img src="https://horizons-cdn.hostinger.com/90edfe98-bc38-4e5c-939e-3b2f88663c35/d5a57a12b4e54cd09623e8e19c362193.png" alt="Email icon" class="btn-icon">Email Us</a>
+                        <a href="mailto:sales@laskontech.com" class="cta-button cta-email"><span style="display:inline-block; font-size:18px; line-height:1; vertical-align:middle; margin-right:10px;">✉️</span>Email Us</a>
                       </td>
                     </tr>
                   </table>
@@ -512,22 +513,7 @@ const StaffAugmentationEmailTemplate = () => {
           </div>
         </td>
       </tr>
-      <tr>
-        <td class="footer">
-          <div class="signature">
-            <p style="font-size: 17px; line-height: 1.7; color: #cbd5e1; margin-bottom: 20px;">Best regards,</p>
-            <p class="signature-name">Emma Johnson</p>
-            <p class="signature-title">Senior Growth Manager, Laskon Technologies</p>
-          </div>
-          <hr class="footer-divider" />
-          <p class="contact-info">
-            <strong>Laskon Tech</strong><br>
-            Unit 1 Parliament Business Centre, Liverpool, UK<br>
-            <a href="tel:+447466436417" class="contact-link">+44 7466 436417</a> &bull; <a href="mailto:sales@laskontech.com" class="contact-link">sales@laskontech.com</a><br/>
-            <a href="https://www.laskontech.com" class="contact-link" style="text-decoration:underline;">www.laskontech.com</a>
-          </p>
-        </td>
-      </tr>
+      ${getFooterHTML()}
     </table>
   </center>
 </body>
