@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Copy, Download, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
+import { getFooterHTML } from '@/components/FooterSnippet';
 
 const EmailTemplate = () => {
   const { toast } = useToast();
@@ -369,18 +370,7 @@ const EmailTemplate = () => {
       </tr>
 
       <!-- Footer -->
-      <tr>
-        <td class="footer">
-          <p class="footer-title">Connect with Laskon Tech</p>
-          <a href="mailto:sales@laskontech.com" class="footer-email">sales@laskontech.com</a>
-          <hr class="footer-divider" />
-          <p class="contact-info">
-            <strong>Laskon Tech</strong><br>
-            Unit 1 Parliament Business Centre, Liverpool, UK<br>
-            <a href="https://www.laskontech.com" class="contact-link" style="text-decoration:underline;">www.laskontech.com</a>
-          </p>
-        </td>
-      </tr>
+      ${getFooterHTML()}
     </table>
   </center>
 </body>

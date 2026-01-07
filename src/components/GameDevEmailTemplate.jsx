@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Copy, Download, Eye, Gamepad2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
+import { getFooterHTML } from '@/components/FooterSnippet';
 
 const GameDevEmailTemplate = () => {
   const { toast } = useToast();
@@ -523,19 +524,7 @@ const GameDevEmailTemplate = () => {
       </tr>
 
       <!-- FOOTER -->
-      <tr>
-        <td class="footer">
-          <div style="margin-bottom: 15px; color: #94a3b8; font-weight: 600;">Emma Johnson</div>
-          <div style="margin-bottom: 20px;">Senior Growth Manager, Laskon Technologies</div>
-          
-          <p style="margin-bottom: 10px;">
-            <a href="tel:+447466436417" class="footer-link">+44 7466 436417</a>
-            <span style="color: #334155;">|</span>
-            <a href="mailto:sales@laskontech.com" class="footer-link">sales@laskontech.com</a>
-          </p>
-          <p>Unit 1 Parliament Business Centre, Liverpool, UK</p>
-        </td>
-      </tr>
+      ${getFooterHTML()}
     </table>
   </center>
 </body>
