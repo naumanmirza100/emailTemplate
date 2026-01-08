@@ -272,7 +272,7 @@ const GameDevEmailTemplate = () => {
       <tr>
         <td class="header">
           <!-- Laskon Logo -->
-          <img src="https://horizons-cdn.hostinger.com/90edfe98-bc38-4e5c-939e-3b2f88663c35/5f7f06879d989eb79cfcea027cc03785.png" alt="Laskon Tech" class="logo">
+          <img src="https://horizons-cdn.hostinger.com/90edfe98-bc38-4e5c-939e-3b2f88663c35/66e33d06cd984435ee08a0d766ddb17c.png" alt="Laskon Tech" class="logo">
         </td>
       </tr>
 
@@ -519,10 +519,6 @@ const GameDevEmailTemplate = () => {
           </div>
           
           <a href="mailto:sales@laskontech.com" class="cta-btn">Email Us for a Discovery Call</a>
-          
-          <div class="badge-container">
-            <img src="https://horizons-cdn.hostinger.com/90edfe98-bc38-4e5c-939e-3b2f88663c35/9a5f67cd2be988856f904716ba2aa15c.png" alt="TopDevelopers Badge" style="max-width: 130px; margin: 0 auto; opacity: 0.8;">
-          </div>
         </td>
       </tr>
 

@@ -31,8 +31,19 @@ const StaffAugmentationEmailTemplate = () => {
     .industry-item-wrapper { transition: all 0.3s ease !important; }
     .industry-item-wrapper:hover { transform: translateY(-4px) !important; box-shadow: 0 12px 24px rgba(0,0,0,0.15) !important; }
     .v-text-gradient {
-      background: 0 0;
-      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#6366f1',endColorstr='#a855f7',GradientType=1);
+      /* iOS Safari compatible gradient */
+      background: -webkit-linear-gradient(270deg, #a5b4fc, #c084fc, #d8b4fe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: #a5b4fc !important; /* Fallback for iOS */
+      display: inline-block;
+      /* iOS Safari specific fixes */
+      -webkit-box-decoration-break: clone;
+      box-decoration-break: clone;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+      /* Old IE filter removed - not needed for modern browsers */
     }
   </style>
   <![endif]-->
@@ -64,21 +75,64 @@ const StaffAugmentationEmailTemplate = () => {
         /* Fallback color for browsers that don't support gradient text */
         color: #a5b4fc !important;
         display: inline-block;
+        /* iOS Safari specific fixes */
+        -webkit-box-decoration-break: clone;
+        box-decoration-break: clone;
     }
     /* Ensure gradient text is visible and has proper fallback */
     .dark-section .text-gradient,
     .dark-section .v-text-gradient {
-        background: -webkit-linear-gradient(270deg, #a5b4fc, #d8b4fe, #e9d5ff);
+        /* Enhanced gradient for better visibility */
+        background: -webkit-linear-gradient(270deg, #a5b4fc, #c084fc, #d8b4fe);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        color: #a5b4fc !important; /* Strong fallback for visibility */
+        /* Strong fallback for visibility - especially for iOS Safari */
+        color: #a5b4fc !important;
+        display: inline-block;
+        /* iOS Safari specific fixes */
+        -webkit-box-decoration-break: clone;
+        box-decoration-break: clone;
+        /* Force hardware acceleration for better rendering */
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        /* Ensure text is visible on iOS */
+        opacity: 1;
     }
-    /* Fallback for light mode or unsupported browsers */
+    /* iOS Safari specific fix - iPhone 14 Pro Max and other iOS devices */
+    @supports (-webkit-touch-callout: none) {
+        .dark-section .text-gradient,
+        .dark-section .v-text-gradient {
+            color: #a5b4fc !important;
+            -webkit-text-fill-color: transparent !important;
+            /* Force gradient to show on iOS */
+            background: -webkit-linear-gradient(270deg, #a5b4fc, #c084fc, #d8b4fe) !important;
+            background-image: -webkit-linear-gradient(270deg, #a5b4fc, #c084fc, #d8b4fe) !important;
+            -webkit-background-clip: text !important;
+            background-clip: text !important;
+            /* iOS Safari needs these for proper rendering */
+            -webkit-box-decoration-break: clone !important;
+            box-decoration-break: clone !important;
+            display: inline-block !important;
+        }
+    }
+    /* Additional iOS Safari fix for iPhone 14 Pro Max specifically */
+    @media screen and (-webkit-min-device-pixel-ratio: 3) and (max-width: 428px) {
+        .dark-section .text-gradient,
+        .dark-section .v-text-gradient {
+            color: #a5b4fc !important;
+            background: -webkit-linear-gradient(270deg, #a5b4fc, #c084fc, #d8b4fe) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+        }
+    }
+    /* Fallback for browsers that don't support gradient text */
     @supports not (-webkit-background-clip: text) {
         .text-gradient,
         .v-text-gradient {
-            color: #6366f1 !important;
+            color: #a5b4fc !important;
+            -webkit-text-fill-color: #a5b4fc !important;
         }
     }
     .cta-container { text-align: center; margin: 35px 0; }
@@ -323,7 +377,7 @@ const StaffAugmentationEmailTemplate = () => {
       <tr>
         <td class="dark-section">
           <div class="section-title-container">
-            <h2 class="section-title text-gradient"><span class="v-text-gradient">Our Staff Augmentation Services</span></h2>
+            <h2 class="section-title text-gradient"><span class="v-text-gradient" style="color: #a5b4fc !important; background: -webkit-linear-gradient(270deg, #a5b4fc, #c084fc, #d8b4fe) !important; background-image: -webkit-linear-gradient(270deg, #a5b4fc, #c084fc, #d8b4fe) !important; -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important; background-clip: text !important; display: inline-block !important; -webkit-box-decoration-break: clone !important; box-decoration-break: clone !important;">Our Staff Augmentation Services</span></h2>
           </div>
         </td>
       </tr>
