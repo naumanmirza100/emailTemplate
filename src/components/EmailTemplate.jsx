@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Copy, Download, Eye } from 'lucide-react';
+import { Copy, Download, Eye, Mail, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { getFooterHTML } from '@/components/FooterSnippet';
@@ -8,6 +8,9 @@ import { getFooterHTML } from '@/components/FooterSnippet';
 const EmailTemplate = () => {
   const { toast } = useToast();
   const [showPreview, setShowPreview] = useState(true);
+  const [recipientEmail, setRecipientEmail] = useState('');
+  const [emailSubject, setEmailSubject] = useState('Transform Your Dental Practice with AI - Laskon Tech');
+  const [isSending, setIsSending] = useState(false);
 
   const emailHTML = `<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -408,43 +411,156 @@ const EmailTemplate = () => {
     });
   };
 
+  const sendEmail = async () => {
+    if (!recipientEmail) {
+      toast({
+        title: "Error",
+        description: "Please enter a recipient email address",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(recipientEmail)) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid email address",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSending(true);
+    try {
+      const response = await fetch('http://localhost:3001/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: recipientEmail,
+          subject: emailSubject,
+          html: emailHTML,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast({
+          title: "Success!",
+          description: `Email sent successfully to ${recipientEmail}`,
+        });
+        setRecipientEmail('');
+      } else {
+        let errorMessage = data.error || "Failed to send email";
+        
+        if (data.code === 'EAUTH' || data.details?.includes('Authentication')) {
+          errorMessage = "Email authentication failed. Please verify your Hostinger email credentials in .env file.";
+        } else if (data.details) {
+          errorMessage = data.details;
+        }
+        
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to connect to email server. Make sure the server is running.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   return (
-    <div className="container mx-auto max-w-7xl px-4">
+    <div className="container mx-auto max-w-7xl px-2 sm:px-4 py-4 sm:py-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
+        className="space-y-4 sm:space-y-6"
       >
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-slate-900 mb-2">Laskon Tech Email Template</h1>
-              <p className="text-slate-600">Professional HTML email for dental practice growth</p>
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-4 sm:p-6 border border-slate-200 dark:border-slate-700 transition-colors">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="w-full md:w-auto">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">Laskon Tech Email Template</h1>
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">Professional HTML email for dental practice growth</p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-2 sm:gap-3 w-full md:w-auto">
               <Button
                 onClick={() => setShowPreview(!showPreview)}
                 variant="outline"
-                className="gap-2"
+                className="gap-2 flex-1 sm:flex-initial border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
               >
                 <Eye className="w-4 h-4" />
-                {showPreview ? 'Hide' : 'Show'} Preview
+                <span className="hidden xs:inline">{showPreview ? 'Hide' : 'Show'} Preview</span>
               </Button>
               <Button
                 onClick={copyToClipboard}
                 variant="outline"
-                className="gap-2"
+                className="gap-2 flex-1 sm:flex-initial border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
               >
                 <Copy className="w-4 h-4" />
-                Copy HTML
+                <span className="hidden xs:inline">Copy HTML</span>
               </Button>
               <Button
                 onClick={downloadHTML}
-                className="gap-2 bg-blue-700 hover:bg-blue-800"
+                className="gap-2 bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white flex-1 sm:flex-initial"
               >
                 <Download className="w-4 h-4" />
-                Download
+                <span className="hidden xs:inline">Download</span>
+              </Button>
+            </div>
+          </div>
+
+          {/* Email Sending Form */}
+          <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+            <div className="flex items-center gap-2 mb-4">
+              <Mail className="w-5 h-5 text-blue-700 dark:text-blue-400" />
+              <h3 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-slate-100">Send Email</h3>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="recipient-email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Recipient Email Address
+                </label>
+                <input
+                  id="recipient-email"
+                  type="email"
+                  value={recipientEmail}
+                  onChange={(e) => setRecipientEmail(e.target.value)}
+                  placeholder="recipient@example.com"
+                  className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-colors"
+                />
+              </div>
+              <div>
+                <label htmlFor="email-subject" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Email Subject
+                </label>
+                <input
+                  id="email-subject"
+                  type="text"
+                  value={emailSubject}
+                  onChange={(e) => setEmailSubject(e.target.value)}
+                  placeholder="Email subject"
+                  className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-colors"
+                />
+              </div>
+              <Button
+                onClick={sendEmail}
+                disabled={isSending || !recipientEmail}
+                className="w-full bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white gap-2"
+              >
+                <Send className="w-4 h-4" />
+                {isSending ? 'Sending...' : 'Send Email'}
               </Button>
             </div>
           </div>
@@ -456,14 +572,14 @@ const EmailTemplate = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="bg-white rounded-lg shadow-lg p-6 mb-6"
+            className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-4 sm:p-6 border border-slate-200 dark:border-slate-700 transition-colors"
           >
-            <h2 className="text-xl font-bold text-slate-900 mb-4">Email Preview</h2>
-            <div className="border border-slate-200 rounded-lg overflow-hidden">
+            <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 mb-4">Email Preview</h2>
+            <div className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
               <iframe
                 srcDoc={emailHTML}
                 title="Email Preview"
-                className="w-full h-[2300px]"
+                className="w-full h-[2300px] min-h-[600px]"
                 style={{ border: 'none' }}
               />
             </div>

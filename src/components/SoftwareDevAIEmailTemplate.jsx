@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Copy, Download, Eye, Code2 } from 'lucide-react';
+import { Copy, Download, Eye, Code2, Mail, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { getFooterHTML } from '@/components/FooterSnippet';
@@ -8,6 +8,9 @@ import { getFooterHTML } from '@/components/FooterSnippet';
 const SoftwareDevAIEmailTemplate = () => {
   const { toast } = useToast();
   const [showPreview, setShowPreview] = useState(true);
+  const [recipientEmail, setRecipientEmail] = useState('');
+  const [emailSubject, setEmailSubject] = useState('Transform Your Business with Custom Software & AI');
+  const [isSending, setIsSending] = useState(false);
 
   const emailHTML = `<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -439,6 +442,43 @@ const SoftwareDevAIEmailTemplate = () => {
     toast({ title: "Downloaded!", description: "Template saved." });
   };
 
+  const sendEmail = async () => {
+    if (!recipientEmail) {
+      toast({ title: "Error", description: "Please enter a recipient email address", variant: "destructive" });
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(recipientEmail)) {
+      toast({ title: "Error", description: "Please enter a valid email address", variant: "destructive" });
+      return;
+    }
+    setIsSending(true);
+    try {
+      const response = await fetch('http://localhost:3001/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to: recipientEmail, subject: emailSubject, html: emailHTML }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        toast({ title: "Success!", description: `Email sent successfully to ${recipientEmail}` });
+        setRecipientEmail('');
+      } else {
+        let errorMessage = data.error || "Failed to send email";
+        if (data.code === 'EAUTH' || data.details?.includes('Authentication')) {
+          errorMessage = "Email authentication failed. Please verify your Hostinger email credentials in .env file.";
+        } else if (data.details) {
+          errorMessage = data.details;
+        }
+        toast({ title: "Error", description: errorMessage, variant: "destructive" });
+      }
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to connect to email server. Make sure the server is running.", variant: "destructive" });
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   return (
     <div className="container mx-auto max-w-7xl px-4">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="space-y-8">
@@ -477,6 +517,28 @@ const SoftwareDevAIEmailTemplate = () => {
               <div className="p-3 bg-slate-50 rounded border border-slate-200 text-slate-600 text-sm font-medium cursor-pointer hover:border-violet-300 hover:bg-violet-50 transition-colors" onClick={() => navigator.clipboard.writeText("Innovation Delivered: Engineering & AI Solutions by Laskon")}>
                 Innovation Delivered: Engineering & AI Solutions by Laskon
               </div>
+            </div>
+          </div>
+
+          {/* Email Sending Form */}
+          <div className="mt-6 pt-6 border-t border-slate-100">
+            <div className="flex items-center gap-2 mb-4">
+              <Mail className="w-5 h-5 text-violet-600" />
+              <h3 className="text-lg font-semibold text-slate-900">Send Email</h3>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="recipient-email" className="block text-sm font-medium text-slate-700 mb-2">Recipient Email Address</label>
+                <input id="recipient-email" type="email" value={recipientEmail} onChange={(e) => setRecipientEmail(e.target.value)} placeholder="recipient@example.com" className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none" />
+              </div>
+              <div>
+                <label htmlFor="email-subject" className="block text-sm font-medium text-slate-700 mb-2">Email Subject</label>
+                <input id="email-subject" type="text" value={emailSubject} onChange={(e) => setEmailSubject(e.target.value)} placeholder="Email subject" className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none" />
+              </div>
+              <Button onClick={sendEmail} disabled={isSending || !recipientEmail} className="w-full bg-violet-600 hover:bg-violet-700 text-white gap-2">
+                <Send className="w-4 h-4" />
+                {isSending ? 'Sending...' : 'Send Email'}
+              </Button>
             </div>
           </div>
         </div>
