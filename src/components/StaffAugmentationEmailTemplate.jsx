@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Copy, Download, Eye } from 'lucide-react';
+import { Copy, Download, Eye, Mail, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { getFooterHTML } from '@/components/FooterSnippet';
@@ -8,6 +8,9 @@ import { getFooterHTML } from '@/components/FooterSnippet';
 const StaffAugmentationEmailTemplate = () => {
   const { toast } = useToast();
   const [showPreview, setShowPreview] = useState(true);
+  const [recipientEmail, setRecipientEmail] = useState('');
+  const [emailSubject, setEmailSubject] = useState('Staff Augmentation Services - Laskon Technologies');
+  const [isSending, setIsSending] = useState(false);
 
   const emailHTML = `<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -28,8 +31,19 @@ const StaffAugmentationEmailTemplate = () => {
     .industry-item-wrapper { transition: all 0.3s ease !important; }
     .industry-item-wrapper:hover { transform: translateY(-4px) !important; box-shadow: 0 12px 24px rgba(0,0,0,0.15) !important; }
     .v-text-gradient {
-      background: 0 0;
-      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#6366f1',endColorstr='#a855f7',GradientType=1);
+      /* iOS Safari compatible gradient */
+      background: -webkit-linear-gradient(270deg, #a5b4fc, #c084fc, #d8b4fe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: #a5b4fc !important; /* Fallback for iOS */
+      display: inline-block;
+      /* iOS Safari specific fixes */
+      -webkit-box-decoration-break: clone;
+      box-decoration-break: clone;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+      /* Old IE filter removed - not needed for modern browsers */
     }
   </style>
   <![endif]-->
@@ -53,11 +67,73 @@ const StaffAugmentationEmailTemplate = () => {
     .section-title-container { text-align: center; margin-bottom: 35px; }
     .section-title { font-size: 32px; font-weight: 800; line-height: 1.3; margin: 0; letter-spacing: -1px; }
     .text-gradient {
-        background: -webkit-linear-gradient(270deg, #818cf8, #c084fc);
+        /* Primary gradient for dark backgrounds */
+        background: -webkit-linear-gradient(270deg, #a5b4fc, #d8b4fe);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        text-fill-color: transparent;
+        /* Fallback color for browsers that don't support gradient text */
+        color: #a5b4fc !important;
+        display: inline-block;
+        /* iOS Safari specific fixes */
+        -webkit-box-decoration-break: clone;
+        box-decoration-break: clone;
+    }
+    /* Ensure gradient text is visible and has proper fallback */
+    .dark-section .text-gradient,
+    .dark-section .v-text-gradient {
+        /* Enhanced gradient for better visibility */
+        background: -webkit-linear-gradient(270deg, #a5b4fc, #c084fc, #d8b4fe);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        /* Strong fallback for visibility - especially for iOS Safari */
+        color: #a5b4fc !important;
+        display: inline-block;
+        /* iOS Safari specific fixes */
+        -webkit-box-decoration-break: clone;
+        box-decoration-break: clone;
+        /* Force hardware acceleration for better rendering */
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        /* Ensure text is visible on iOS */
+        opacity: 1;
+    }
+    /* iOS Safari specific fix - iPhone 14 Pro Max and other iOS devices */
+    @supports (-webkit-touch-callout: none) {
+        .dark-section .text-gradient,
+        .dark-section .v-text-gradient {
+            color: #a5b4fc !important;
+            -webkit-text-fill-color: transparent !important;
+            /* Force gradient to show on iOS */
+            background: -webkit-linear-gradient(270deg, #a5b4fc, #c084fc, #d8b4fe) !important;
+            background-image: -webkit-linear-gradient(270deg, #a5b4fc, #c084fc, #d8b4fe) !important;
+            -webkit-background-clip: text !important;
+            background-clip: text !important;
+            /* iOS Safari needs these for proper rendering */
+            -webkit-box-decoration-break: clone !important;
+            box-decoration-break: clone !important;
+            display: inline-block !important;
+        }
+    }
+    /* Additional iOS Safari fix for iPhone 14 Pro Max specifically */
+    @media screen and (-webkit-min-device-pixel-ratio: 3) and (max-width: 428px) {
+        .dark-section .text-gradient,
+        .dark-section .v-text-gradient {
+            color: #a5b4fc !important;
+            background: -webkit-linear-gradient(270deg, #a5b4fc, #c084fc, #d8b4fe) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+        }
+    }
+    /* Fallback for browsers that don't support gradient text */
+    @supports not (-webkit-background-clip: text) {
+        .text-gradient,
+        .v-text-gradient {
+            color: #a5b4fc !important;
+            -webkit-text-fill-color: #a5b4fc !important;
+        }
     }
     .cta-container { text-align: center; margin: 35px 0; }
     .cta-button { display: inline-block; color: #ffffff !important; font-size: 16px; font-weight: 600; text-decoration: none !important; padding: 15px 25px; border-radius: 10px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align:center; min-width: 160px; }
@@ -301,7 +377,7 @@ const StaffAugmentationEmailTemplate = () => {
       <tr>
         <td class="dark-section">
           <div class="section-title-container">
-            <h2 class="section-title text-gradient"><span class="v-text-gradient">Our Staff Augmentation Services</span></h2>
+            <h2 class="section-title text-gradient"><span class="v-text-gradient" style="color: #a5b4fc !important; background: -webkit-linear-gradient(270deg, #a5b4fc, #c084fc, #d8b4fe) !important; background-image: -webkit-linear-gradient(270deg, #a5b4fc, #c084fc, #d8b4fe) !important; -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important; background-clip: text !important; display: inline-block !important; -webkit-box-decoration-break: clone !important; box-decoration-break: clone !important;">Our Staff Augmentation Services</span></h2>
           </div>
         </td>
       </tr>
@@ -551,43 +627,156 @@ const StaffAugmentationEmailTemplate = () => {
     });
   };
 
+  const sendEmail = async () => {
+    if (!recipientEmail) {
+      toast({
+        title: "Error",
+        description: "Please enter a recipient email address",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(recipientEmail)) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid email address",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSending(true);
+    try {
+      const response = await fetch('http://localhost:3001/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: recipientEmail,
+          subject: emailSubject,
+          html: emailHTML,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast({
+          title: "Success!",
+          description: `Email sent successfully to ${recipientEmail}`,
+        });
+        setRecipientEmail('');
+      } else {
+        let errorMessage = data.error || "Failed to send email";
+        
+        // Provide helpful message for authentication errors
+        if (data.code === 'EAUTH' || data.details?.includes('Authentication')) {
+          errorMessage = "Email authentication failed. Please verify your Hostinger email credentials in .env file.";
+        } else if (data.details) {
+          errorMessage = data.details;
+        }
+        
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to connect to email server. Make sure the server is running.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   return (
-    <div className="container mx-auto max-w-7xl px-4">
+    <div className="container mx-auto max-w-7xl px-2 sm:px-4 py-4 sm:py-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="space-y-8"
+        className="space-y-4 sm:space-y-8"
       >
-        <div className="bg-white/80 backdrop-blur-md rounded-xl shadow-lg p-6 ">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-slate-900 mb-1">Staff Augmentation Email Template</h1>
-              <p className="text-slate-600">Elite, best-in-class design for Laskon Tech's staff augmentation services.</p>
+        <div className="bg-white dark:bg-slate-800/80 backdrop-blur-md rounded-xl shadow-lg p-4 sm:p-6 border border-slate-200 dark:border-slate-700 transition-colors">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="w-full md:w-auto">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-1">Staff Augmentation Email Template</h1>
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">Elite, best-in-class design for Laskon Tech's staff augmentation services.</p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-2 sm:gap-3 w-full md:w-auto">
               <Button
                 onClick={() => setShowPreview(!showPreview)}
                 variant="outline"
-                className="gap-2"
+                className="gap-2 flex-1 sm:flex-initial border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
               >
                 <Eye className="w-4 h-4" />
-                {showPreview ? 'Hide' : 'Show'} Preview
+                <span className="hidden xs:inline">{showPreview ? 'Hide' : 'Show'} Preview</span>
               </Button>
               <Button
                 onClick={copyToClipboard}
                 variant="outline"
-                className="gap-2"
+                className="gap-2 flex-1 sm:flex-initial border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
               >
                 <Copy className="w-4 h-4" />
-                Copy HTML
+                <span className="hidden xs:inline">Copy HTML</span>
               </Button>
               <Button
                 onClick={downloadHTML}
-                className="gap-2 bg-indigo-600 hover:bg-indigo-700 text-white"
+                className="gap-2 bg-indigo-600 hover:bg-indigo-700 text-white flex-1 sm:flex-initial"
               >
                 <Download className="w-4 h-4" />
-                Download
+                <span className="hidden xs:inline">Download</span>
+              </Button>
+            </div>
+          </div>
+
+          {/* Email Sending Form */}
+          <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+            <div className="flex items-center gap-2 mb-4">
+              <Mail className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+              <h3 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-slate-100">Send Email</h3>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="recipient-email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Recipient Email Address
+                </label>
+                <input
+                  id="recipient-email"
+                  type="email"
+                  value={recipientEmail}
+                  onChange={(e) => setRecipientEmail(e.target.value)}
+                  placeholder="recipient@example.com"
+                  className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 outline-none transition-colors"
+                />
+              </div>
+              <div>
+                <label htmlFor="email-subject" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Email Subject
+                </label>
+                <input
+                  id="email-subject"
+                  type="text"
+                  value={emailSubject}
+                  onChange={(e) => setEmailSubject(e.target.value)}
+                  placeholder="Email subject"
+                  className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 outline-none transition-colors"
+                />
+              </div>
+              <Button
+                onClick={sendEmail}
+                disabled={isSending || !recipientEmail}
+                className="w-full bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white gap-2"
+              >
+                <Send className="w-4 h-4" />
+                {isSending ? 'Sending...' : 'Send Email'}
               </Button>
             </div>
           </div>
@@ -598,14 +787,14 @@ const StaffAugmentationEmailTemplate = () => {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.98 }}
             transition={{ duration: 0.3 }}
-            className="bg-white rounded-xl shadow-2xl overflow-hidden"
+            className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-700 transition-colors"
           >
-            <div className="border border-slate-200/80 rounded-xl overflow-hidden">
+            <div className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
               <iframe
                 srcDoc={emailHTML}
                 title="Staff Augmentation Email Preview"
                 className="w-full"
-                style={{ border: 'none', height: '3600px' }}
+                style={{ border: 'none', height: '3600px', minHeight: '600px' }}
               />
             </div>
           </motion.div>

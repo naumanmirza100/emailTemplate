@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Copy, Download, Eye, Cloud } from 'lucide-react';
+import { Copy, Download, Eye, Cloud, Mail, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { getFooterHTML } from '@/components/FooterSnippet';
@@ -8,6 +8,9 @@ import { getFooterHTML } from '@/components/FooterSnippet';
 const CloudModernizationEmailTemplate = () => {
   const { toast } = useToast();
   const [showPreview, setShowPreview] = useState(true);
+  const [recipientEmail, setRecipientEmail] = useState('');
+  const [emailSubject, setEmailSubject] = useState('Accelerate Your Digital Future: Cloud & Modernization Solutions');
+  const [isSending, setIsSending] = useState(false);
 
   const emailHTML = `<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -380,53 +383,112 @@ const CloudModernizationEmailTemplate = () => {
     toast({ title: "Downloaded!", description: "Template saved." });
   };
 
+  const sendEmail = async () => {
+    if (!recipientEmail) {
+      toast({ title: "Error", description: "Please enter a recipient email address", variant: "destructive" });
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(recipientEmail)) {
+      toast({ title: "Error", description: "Please enter a valid email address", variant: "destructive" });
+      return;
+    }
+    setIsSending(true);
+    try {
+      const response = await fetch('http://localhost:3001/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to: recipientEmail, subject: emailSubject, html: emailHTML }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        toast({ title: "Success!", description: `Email sent successfully to ${recipientEmail}` });
+        setRecipientEmail('');
+      } else {
+        let errorMessage = data.error || "Failed to send email";
+        if (data.code === 'EAUTH' || data.details?.includes('Authentication')) {
+          errorMessage = "Email authentication failed. Please verify your Hostinger email credentials in .env file.";
+        } else if (data.details) {
+          errorMessage = data.details;
+        }
+        toast({ title: "Error", description: errorMessage, variant: "destructive" });
+      }
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to connect to email server. Make sure the server is running.", variant: "destructive" });
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   return (
-    <div className="container mx-auto max-w-7xl px-4">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="space-y-8">
+    <div className="container mx-auto max-w-7xl px-2 sm:px-4 py-4 sm:py-8">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="space-y-4 sm:space-y-8">
         {/* UI Controls */}
-        <div className="bg-white rounded-xl shadow-xl border border-slate-200 p-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-sky-100 rounded-lg border border-sky-200">
-                <Cloud className="w-8 h-8 text-sky-600" />
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 p-4 sm:p-6 transition-colors">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex items-center gap-3 sm:gap-4 w-full md:w-auto">
+              <div className="p-2 sm:p-3 bg-sky-100 dark:bg-sky-900/30 rounded-lg border border-sky-200 dark:border-sky-800">
+                <Cloud className="w-6 h-6 sm:w-8 sm:h-8 text-sky-600 dark:text-sky-400" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-slate-900">Cloud & Modernization</h1>
-                <p className="text-slate-500 text-sm">Premium dark-themed template for enterprise tech solutions.</p>
+                <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100">Cloud & Modernization</h1>
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Premium dark-themed template for enterprise tech solutions.</p>
               </div>
             </div>
-            <div className="flex gap-3">
-               <Button onClick={() => setShowPreview(!showPreview)} variant="outline" className="border-slate-200 text-slate-700 hover:bg-slate-50">
-                <Eye className="w-4 h-4 mr-2" /> {showPreview ? 'Hide' : 'Show'} Preview
+            <div className="flex flex-wrap gap-2 sm:gap-3 w-full md:w-auto">
+               <Button onClick={() => setShowPreview(!showPreview)} variant="outline" className="border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex-1 sm:flex-initial">
+                <Eye className="w-4 h-4 mr-2" /> <span className="hidden xs:inline">{showPreview ? 'Hide' : 'Show'} Preview</span>
               </Button>
-              <Button onClick={copyToClipboard} variant="outline" className="border-slate-200 text-slate-700 hover:bg-slate-50">
-                <Copy className="w-4 h-4 mr-2" /> Copy Code
+              <Button onClick={copyToClipboard} variant="outline" className="border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex-1 sm:flex-initial">
+                <Copy className="w-4 h-4 mr-2" /> <span className="hidden xs:inline">Copy Code</span>
               </Button>
-              <Button onClick={downloadHTML} className="bg-sky-600 hover:bg-sky-700 text-white">
-                <Download className="w-4 h-4 mr-2" /> Download
+              <Button onClick={downloadHTML} className="bg-sky-600 hover:bg-sky-700 dark:bg-sky-500 dark:hover:bg-sky-600 text-white flex-1 sm:flex-initial">
+                <Download className="w-4 h-4 mr-2" /> <span className="hidden xs:inline">Download</span>
               </Button>
             </div>
           </div>
           
           {/* Subject Line Options */}
-          <div className="mt-6 pt-6 border-t border-slate-100">
-            <h3 className="text-sm font-medium text-slate-500 mb-3">Recommended Subject Lines:</h3>
-            <div className="grid md:grid-cols-2 gap-3">
-              <div className="p-3 bg-slate-50 rounded border border-slate-200 text-slate-600 text-sm font-medium cursor-pointer hover:border-sky-300 hover:bg-sky-50 transition-colors" onClick={() => navigator.clipboard.writeText("Accelerate Your Digital Future: Cloud & Modernization Solutions")}>
+          <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-700">
+            <h3 className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 mb-3">Recommended Subject Lines:</h3>
+            <div className="grid md:grid-cols-2 gap-2 sm:gap-3">
+              <div className="p-2 sm:p-3 bg-slate-50 dark:bg-slate-900/50 rounded border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs sm:text-sm font-medium cursor-pointer hover:border-sky-300 dark:hover:border-sky-600 hover:bg-sky-50 dark:hover:bg-sky-900/50 transition-colors" onClick={() => navigator.clipboard.writeText("Accelerate Your Digital Future: Cloud & Modernization Solutions")}>
                 Accelerate Your Digital Future: Cloud & Modernization Solutions
               </div>
-              <div className="p-3 bg-slate-50 rounded border border-slate-200 text-slate-600 text-sm font-medium cursor-pointer hover:border-sky-300 hover:bg-sky-50 transition-colors" onClick={() => navigator.clipboard.writeText("Scale Faster with Laskon: Elite Cloud Talent & Automation")}>
+              <div className="p-2 sm:p-3 bg-slate-50 dark:bg-slate-900/50 rounded border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs sm:text-sm font-medium cursor-pointer hover:border-sky-300 dark:hover:border-sky-600 hover:bg-sky-50 dark:hover:bg-sky-900/50 transition-colors" onClick={() => navigator.clipboard.writeText("Scale Faster with Laskon: Elite Cloud Talent & Automation")}>
                 Scale Faster with Laskon: Elite Cloud Talent & Automation
               </div>
+            </div>
+          </div>
+
+          {/* Email Sending Form */}
+          <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-700">
+            <div className="flex items-center gap-2 mb-4">
+              <Mail className="w-5 h-5 text-sky-600 dark:text-sky-400" />
+              <h3 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-slate-100">Send Email</h3>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="recipient-email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Recipient Email Address</label>
+                <input id="recipient-email" type="email" value={recipientEmail} onChange={(e) => setRecipientEmail(e.target.value)} placeholder="recipient@example.com" className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-sky-500 dark:focus:ring-sky-400 focus:border-sky-500 dark:focus:border-sky-400 outline-none transition-colors" />
+              </div>
+              <div>
+                <label htmlFor="email-subject" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Email Subject</label>
+                <input id="email-subject" type="text" value={emailSubject} onChange={(e) => setEmailSubject(e.target.value)} placeholder="Email subject" className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-sky-500 dark:focus:ring-sky-400 focus:border-sky-500 dark:focus:border-sky-400 outline-none transition-colors" />
+              </div>
+              <Button onClick={sendEmail} disabled={isSending || !recipientEmail} className="w-full bg-sky-600 hover:bg-sky-700 dark:bg-sky-500 dark:hover:bg-sky-600 text-white gap-2">
+                <Send className="w-4 h-4" />
+                {isSending ? 'Sending...' : 'Send Email'}
+              </Button>
             </div>
           </div>
         </div>
 
         {/* Live Preview */}
         {showPreview && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="rounded-xl overflow-hidden border border-slate-200 bg-slate-900 shadow-inner">
-            <div className="p-4 flex justify-center bg-slate-950">
-              <iframe srcDoc={emailHTML} title="Preview" className="w-full max-w-[720px]" style={{ border: 'none', height: '1800px', background: 'transparent' }} />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-900 shadow-inner transition-colors">
+            <div className="p-2 sm:p-4 flex justify-center bg-slate-950">
+              <iframe srcDoc={emailHTML} title="Preview" className="w-full max-w-[720px]" style={{ border: 'none', height: '1800px', minHeight: '600px', background: 'transparent' }} />
             </div>
           </motion.div>
         )}
