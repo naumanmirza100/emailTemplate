@@ -7,10 +7,45 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const HOST = process.env.HOST || '0.0.0.0'; // Listen on all interfaces for deployment
 
 // Middleware
-app.use(cors());
+// CORS configuration - allow both localhost and Vercel deployment
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5173', // Vite default dev port
+  'https://email-template-lime.vercel.app',
+  process.env.FRONTEND_URL
+].filter(Boolean); // Remove undefined values
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Allow if origin is in allowed list or FRONTEND_URL is set to '*'
+    if (allowedOrigins.includes(origin) || process.env.FRONTEND_URL === '*') {
+      callback(null, true);
+    } else if (process.env.FRONTEND_URL) {
+      // Allow if FRONTEND_URL is set (for production)
+      callback(null, true);
+    } else {
+      // In development, allow all origins
+      callback(null, true);
+    }
+  },
+  credentials: true
+}));
 app.use(express.json());
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    service: 'email-server'
+  });
+});
 
 // Email transporter configuration for Hostinger email
 // SMTP Settings:
@@ -28,8 +63,8 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASSWORD || '6o/kQR1eF+Y'
   },
   tls: {
-    rejectUnauthorized: false,
-    ciphers: 'SSLv3'
+    rejectUnauthorized: false
+    // Removed ciphers: 'SSLv3' as it's deprecated
   }
 });
 
@@ -110,7 +145,8 @@ app.post('/api/send-email', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Email server running on http://localhost:${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`✅ Email server running on http://${HOST}:${PORT}`);
+  console.log(`📧 Health check: http://${HOST}:${PORT}/health`);
 });
 
