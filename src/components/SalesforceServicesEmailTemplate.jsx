@@ -4,6 +4,7 @@ import { Copy, Download, Eye, CloudCog, CheckCircle2, Mail, Send } from 'lucide-
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { getFooterHTML } from '@/components/FooterSnippet';
+import { API_BASE_URL } from '@/config/api';
 
 const SalesforceServicesEmailTemplate = () => {
   const { toast } = useToast();
@@ -572,7 +573,7 @@ const SalesforceServicesEmailTemplate = () => {
     }
     setIsSending(true);
     try {
-      const response = await fetch('http://localhost:3001/api/send-email', {
+      const response = await fetch(`${API_BASE_URL}/send-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ to: recipientEmail, subject: emailSubject, html: emailHTML }),
