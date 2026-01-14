@@ -32,3 +32,4 @@ Your API is now at: `https://email-template-lime.vercel.app/api/send-email`
 
 No separate backend needed - everything runs on Vercel!
 
+
