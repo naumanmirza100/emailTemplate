@@ -9,9 +9,10 @@ import { CloudModernizationEmail } from '@/pages/CloudModernizationEmail';
 import { SoftwareDevAIEmail } from '@/pages/SoftwareDevAIEmail';
 import { ProductInnovationEmail } from '@/pages/ProductInnovationEmail';
 import { SalesforceServicesEmail } from '@/pages/SalesforceServicesEmail';
+import { DentalEmail } from '@/pages/DentalEmail';
 import { Home } from '@/pages/Home';
 import { Toaster } from '@/components/ui/toaster';
-import { Users, Gamepad2, ShieldCheck, Home as HomeIcon, Megaphone, Cloud, Code2, Lightbulb, CloudCog, Moon, Sun } from 'lucide-react';
+import { Users, Gamepad2, ShieldCheck, Home as HomeIcon, Megaphone, Cloud, Code2, Lightbulb, CloudCog, Moon, Sun, Smile } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 
@@ -66,6 +67,7 @@ function AppContent() {
             
             <nav className="flex flex-wrap justify-center items-center gap-2 bg-slate-50 dark:bg-slate-800 p-1 rounded-full border border-slate-200 dark:border-slate-700 w-full lg:w-auto">
               <NavItem to="/" icon={HomeIcon} label="Home" />
+              <NavItem to="/dental" icon={Smile} label="Dental" />
               <NavItem to="/staffing" icon={Users} label="Staffing" />
               <NavItem to="/game-dev" icon={Gamepad2} label="Game Dev" />
               <NavItem to="/cyber-security" icon={ShieldCheck} label="Security" />
@@ -81,6 +83,7 @@ function AppContent() {
       <main className="min-h-screen bg-slate-100 dark:bg-slate-900 transition-colors">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/dental" element={<DentalEmail />} />
           <Route path="/staffing" element={<StaffingEmail />} />
           <Route path="/game-dev" element={<GameDevEmail />} />
           <Route path="/cyber-security" element={<CyberSecurityEmail />} />
