@@ -84,3 +84,4 @@ FRONTEND_URL=https://email-template-lime.vercel.app
 - ✅ All 9 email templates use the API config
 - ✅ Health check endpoint available
 
+

@@ -145,3 +145,4 @@ curl -X POST https://your-backend-url.railway.app/api/send-email \
 - **Backend:** Deploy to Railway/Render/Heroku (you need to set this up)
 - **API URL:** Set `VITE_API_URL` in Vercel to point to your backend
 
+
