@@ -9,9 +9,10 @@ import { CloudModernizationEmail } from '@/pages/CloudModernizationEmail';
 import { SoftwareDevAIEmail } from '@/pages/SoftwareDevAIEmail';
 import { ProductInnovationEmail } from '@/pages/ProductInnovationEmail';
 import { SalesforceServicesEmail } from '@/pages/SalesforceServicesEmail';
+import { EmailSender } from '@/pages/EmailSender';
 import { Home } from '@/pages/Home';
 import { Toaster } from '@/components/ui/toaster';
-import { Users, Gamepad2, ShieldCheck, Home as HomeIcon, Megaphone, Cloud, Code2, Lightbulb, CloudCog } from 'lucide-react';
+import { Users, Gamepad2, ShieldCheck, Home as HomeIcon, Megaphone, Cloud, Code2, Lightbulb, CloudCog, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const NavItem = ({ to, icon: Icon, label }) => {
@@ -56,6 +57,7 @@ function AppContent() {
             
             <nav className="flex flex-wrap justify-center items-center gap-2 bg-slate-50 p-1 rounded-full border border-slate-200">
               <NavItem to="/" icon={HomeIcon} label="Home" />
+              <NavItem to="/email-sender" icon={Mail} label="Send Email" />
               <NavItem to="/staffing" icon={Users} label="Staffing" />
               <NavItem to="/game-dev" icon={Gamepad2} label="Game Dev" />
               <NavItem to="/cyber-security" icon={ShieldCheck} label="Security" />
@@ -71,6 +73,7 @@ function AppContent() {
       <main className="min-h-screen bg-slate-100">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/email-sender" element={<EmailSender />} />
           <Route path="/staffing" element={<StaffingEmail />} />
           <Route path="/game-dev" element={<GameDevEmail />} />
           <Route path="/cyber-security" element={<CyberSecurityEmail />} />
