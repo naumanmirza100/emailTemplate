@@ -1,6 +1,6 @@
 import React from 'react';
-import EmailTemplate from '@/components/EmailTemplate';
+import DentalEmailTemplate from '@/components/DentalEmailTemplate';
 
 export const DentalEmail = () => {
-    return <EmailTemplate />;
+    return <DentalEmailTemplate />;
 }
