@@ -1,10 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Copy, Download, Eye, Gamepad2, Mail, Send } from 'lucide-react';
+import { Copy, Download, Eye, Gamepad2, Mail, Send, Upload, FileSpreadsheet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { getFooterHTML } from '@/components/FooterSnippet';
 import { API_BASE_URL } from '@/config/api';
+
+// Parse one CSV line respecting quoted fields (commas inside quotes stay)
+const parseCSVLine = (line) => {
+  const out = [];
+  let cur = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') {
+      inQuotes = !inQuotes;
+    } else if (c === ',' && !inQuotes) {
+      out.push(cur.trim().replace(/^"|"$/g, ''));
+      cur = '';
+    } else {
+      cur += c;
+    }
+  }
+  out.push(cur.trim().replace(/^"|"$/g, ''));
+  return out;
+};
+
+// Parse CSV and find Email (or Content) + First Name columns
+const parseCSVRecipients = (text) => {
+  const lines = text.split(/\r?\n/).filter((line) => line.trim());
+  if (lines.length < 2) return [];
+  const headers = parseCSVLine(lines[0]);
+  const emailCol = headers.findIndex((h) => /^email$/i.test(h) || /^content$/i.test(h));
+  const firstNameCol = headers.findIndex((h) => /first\s*name/i.test(h) || /^firstname$/i.test(h));
+  if (emailCol === -1 || firstNameCol === -1) return [];
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    const values = parseCSVLine(lines[i]);
+    const email = (values[emailCol] || '').trim();
+    const firstName = (values[firstNameCol] || '').trim();
+    if (email && firstName) rows.push({ email, firstName });
+  }
+  return rows;
+};
 
 const GameDevEmailTemplate = () => {
   const { toast } = useToast();
@@ -12,8 +50,11 @@ const GameDevEmailTemplate = () => {
   const [recipientEmail, setRecipientEmail] = useState('');
   const [emailSubject, setEmailSubject] = useState('Powering the Next Generation of Games - Laskon Tech');
   const [isSending, setIsSending] = useState(false);
+  const [clientName, setClientName] = useState('[Client Name]');
+  const [importedRecipients, setImportedRecipients] = useState([]);
+  const [selectedImportIndex, setSelectedImportIndex] = useState(null);
 
-  const emailHTML = `<!DOCTYPE html>
+  const emailHTML = useMemo(() => `<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
   <meta charset="utf-8">
@@ -290,8 +331,8 @@ const GameDevEmailTemplate = () => {
         <td class="content-wrapper">
           <div class="intro-text">
             <p style="margin: 0;">
-              <strong>Hi [Client Name],</strong><br><br>
-              I'm Emma from Laskon Technologies. We help game studios build better worlds, faster. Whether you need a full-cycle development partner or specialized talent to augment your team, we have the expertise to push your project across the finish line.
+              <strong>Hi ${clientName},</strong><br><br>
+              I'm Nauman Mirza from Laskon Technologies. We help game studios build better worlds, faster. Whether you need a full-cycle development partner or specialized talent to augment your team, we have the expertise to push your project across the finish line.
             </p>
           </div>
 
@@ -304,7 +345,7 @@ const GameDevEmailTemplate = () => {
             <!-- Service 1 -->
             <div class="service-card">
                 <div class="service-icon-box">
-                    <img src="https://img.icons8.com/ios-filled/50/22d3ee/controller.png" width="32" height="32" alt="Full Cycle">
+                    <img src="https://img.icons8.com/ios-filled/50/22d3ee/controller.png" width="32" height="32" alt="Full Cycle" referrerPolicy="no-referrer" />
                 </div>
                 <span class="service-title">Full-Cycle Development</span>
                 <span class="service-desc">End-to-end game production for PC, Console, and Mobile platforms.</span>
@@ -317,7 +358,7 @@ const GameDevEmailTemplate = () => {
             <!-- Service 2 -->
             <div class="service-card">
                  <div class="service-icon-box">
-                    <img src="https://img.icons8.com/ios-filled/50/a855f7/paint-palette.png" width="32" height="32" alt="Art">
+                    <img src="https://img.icons8.com/ios-filled/50/a855f7/paint-palette.png" width="32" height="32" alt="Art" referrerPolicy="no-referrer" />
                 </div>
                 <span class="service-title">Game Art & Design</span>
                 <span class="service-desc">Stunning visuals that define your game's identity and world.</span>
@@ -330,7 +371,7 @@ const GameDevEmailTemplate = () => {
             <!-- Service 3 -->
             <div class="service-card">
                  <div class="service-icon-box">
-                    <img src="https://img.icons8.com/ios-filled/50/f472b6/artificial-intelligence.png" width="32" height="32" alt="AI">
+                    <img src="https://img.icons8.com/ios-filled/50/f472b6/artificial-intelligence.png" width="32" height="32" alt="AI" referrerPolicy="no-referrer" />
                 </div>
                 <span class="service-title">Mechanics & AI Systems</span>
                 <span class="service-desc">Robust core loops and intelligent behaviors for immersive gameplay.</span>
@@ -343,7 +384,7 @@ const GameDevEmailTemplate = () => {
             <!-- Service 4 -->
             <div class="service-card">
                  <div class="service-icon-box">
-                    <img src="https://img.icons8.com/ios-filled/50/fbbf24/money-bag.png" width="32" height="32" alt="Money">
+                    <img src="https://img.icons8.com/ios-filled/50/fbbf24/money-bag.png" width="32" height="32" alt="Money" referrerPolicy="no-referrer" />
                 </div>
                 <span class="service-title">Monetization & LiveOps</span>
                 <span class="service-desc">Sustainable revenue models and long-term player retention strategies.</span>
@@ -356,7 +397,7 @@ const GameDevEmailTemplate = () => {
              <!-- Service 5 -->
             <div class="service-card">
                  <div class="service-icon-box">
-                    <img src="https://img.icons8.com/ios-filled/50/4ade80/virtual-reality.png" width="32" height="32" alt="VR">
+                    <img src="https://img.icons8.com/ios-filled/50/4ade80/virtual-reality.png" width="32" height="32" alt="VR" referrerPolicy="no-referrer" />
                 </div>
                 <span class="service-title">AR/VR & Blockchain</span>
                 <span class="service-desc">Next-gen experiences leveraging immersive tech and Web3 infrastructure.</span>
@@ -369,7 +410,7 @@ const GameDevEmailTemplate = () => {
              <!-- Service 6 -->
             <div class="service-card">
                  <div class="service-icon-box">
-                    <img src="https://img.icons8.com/ios-filled/50/f87171/bug.png" width="32" height="32" alt="QA">
+                    <img src="https://img.icons8.com/ios-filled/50/f87171/bug.png" width="32" height="32" alt="QA" referrerPolicy="no-referrer" />
                 </div>
                 <span class="service-title">Game QA & Testing</span>
                 <span class="service-desc">Rigorous testing to ensure bug-free, compliant, and polished releases.</span>
@@ -382,7 +423,7 @@ const GameDevEmailTemplate = () => {
             <!-- Service 7 - Full Width Centered if preferred, or just flow in grid -->
              <div class="service-card" style="width: 100%; margin-right: 0;">
                  <div class="service-icon-box">
-                    <img src="https://img.icons8.com/ios-filled/50/818cf8/commercial.png" width="32" height="32" alt="Marketing">
+                    <img src="https://img.icons8.com/ios-filled/50/818cf8/commercial.png" width="32" height="32" alt="Marketing" referrerPolicy="no-referrer" />
                 </div>
                 <span class="service-title">Marketing & Publishing</span>
                 <span class="service-desc">Strategic user acquisition and store optimization for maximum reach.</span>
@@ -528,7 +569,47 @@ const GameDevEmailTemplate = () => {
     </table>
   </center>
 </body>
-</html>`;
+</html>`, [clientName]);
+
+  const handleCSVImport = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.name.toLowerCase().endsWith('.csv')) {
+      toast({ title: 'Invalid file', description: 'Please select a CSV file.', variant: 'destructive' });
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const text = ev.target?.result ?? '';
+      const rows = parseCSVRecipients(text);
+      if (rows.length === 0) {
+        toast({
+          title: 'No valid rows',
+          description: 'CSV must have headers containing "Email" or "Content" and "First Name".',
+          variant: 'destructive',
+        });
+        setImportedRecipients([]);
+        setSelectedImportIndex(null);
+        return;
+      }
+      setImportedRecipients(rows);
+      setSelectedImportIndex(0);
+      setRecipientEmail(rows[0].email);
+      setClientName(rows[0].firstName);
+      toast({ title: 'Import successful', description: `${rows.length} recipient(s) loaded.` });
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
+  const selectRecipient = (index) => {
+    setSelectedImportIndex(index);
+    const r = importedRecipients[index];
+    if (r) {
+      setRecipientEmail(r.email);
+      setClientName(r.firstName);
+    }
+  };
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(emailHTML).then(() => {
@@ -552,41 +633,79 @@ const GameDevEmailTemplate = () => {
     toast({ title: "Downloaded!", description: "Template saved." });
   };
 
+  // Build HTML with a specific greeting name (for sending to multiple recipients)
+  const getEmailHTMLForName = (firstName) => {
+    return emailHTML.replace(/<strong>Hi [^<]+,<\/strong>/, `<strong>Hi ${firstName},</strong>`);
+  };
+
   const sendEmail = async () => {
-    if (!recipientEmail) {
-      toast({ title: "Error", description: "Please enter a recipient email address", variant: "destructive" });
+    const recipientsToSend =
+      importedRecipients.length > 0
+        ? importedRecipients
+        : recipientEmail
+          ? [{ email: recipientEmail, firstName: clientName }]
+          : [];
+
+    if (recipientsToSend.length === 0) {
+      toast({ title: "Error", description: "Please enter a recipient email or import a CSV.", variant: "destructive" });
       return;
     }
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(recipientEmail)) {
-      toast({ title: "Error", description: "Please enter a valid email address", variant: "destructive" });
+    const invalid = recipientsToSend.find((r) => !emailRegex.test(r.email));
+    if (invalid) {
+      toast({ title: "Error", description: `Invalid email address: ${invalid.email}`, variant: "destructive" });
       return;
     }
+
     setIsSending(true);
-    try {
-      const response = await fetch(`${API_BASE_URL}/send-email`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ to: recipientEmail, subject: emailSubject, html: emailHTML }),
-      });
-      const data = await response.json();
-      if (data.success) {
-        toast({ title: "Success!", description: `Email sent successfully to ${recipientEmail}` });
-        setRecipientEmail('');
-      } else {
-        let errorMessage = data.error || "Failed to send email";
-        if (data.code === 'EAUTH' || data.details?.includes('Authentication')) {
-          errorMessage = "Email authentication failed. Please verify your Hostinger email credentials in .env file.";
-        } else if (data.details) {
-          errorMessage = data.details;
+    let successCount = 0;
+    let failCount = 0;
+
+    for (let i = 0; i < recipientsToSend.length; i++) {
+      const r = recipientsToSend[i];
+      const html = getEmailHTMLForName(r.firstName);
+      try {
+        const response = await fetch(`${API_BASE_URL}/send-email`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ to: r.email, subject: emailSubject, html }),
+        });
+        const data = await response.json();
+        if (data.success) {
+          successCount++;
+          toast({ title: "Sent", description: `Email sent to ${r.firstName} (${r.email})` });
+        } else {
+          failCount++;
+          const errorMessage =
+            data.code === 'EAUTH' || data.details?.includes('Authentication')
+              ? "Email authentication failed. Check Hostinger credentials in .env."
+              : data.error || data.details || "Failed to send email";
+          toast({ title: "Error", description: `${r.email}: ${errorMessage}`, variant: "destructive" });
         }
-        toast({ title: "Error", description: errorMessage, variant: "destructive" });
+      } catch (error) {
+        failCount++;
+        toast({
+          title: "Error",
+          description: `${r.email}: Failed to connect to email server.`,
+          variant: "destructive",
+        });
       }
-    } catch (error) {
-      toast({ title: "Error", description: "Failed to connect to email server. Make sure the server is running.", variant: "destructive" });
-    } finally {
-      setIsSending(false);
     }
+
+    if (recipientsToSend.length > 1) {
+      toast({
+        title: "Batch complete",
+        description: `Sent: ${successCount}, Failed: ${failCount} of ${recipientsToSend.length} recipient(s).`,
+        variant: failCount > 0 ? "destructive" : "default",
+      });
+    }
+
+    if (successCount > 0 && importedRecipients.length === 0) {
+      setRecipientEmail('');
+    }
+
+    setIsSending(false);
   };
 
   return (
@@ -625,18 +744,65 @@ const GameDevEmailTemplate = () => {
               <Mail className="w-5 h-5 text-cyan-400" />
               <h3 className="text-lg font-semibold text-white">Send Email</h3>
             </div>
+
+            {/* Import CSV */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-slate-300 mb-2">Import recipients from CSV</label>
+              <p className="text-xs text-slate-500 mb-2">CSV must have a column named &quot;Email&quot; or &quot;Content&quot; and &quot;First Name&quot;. Emails will use &quot;Hi [First Name],&quot; in the body.</p>
+              <div className="flex items-center gap-3">
+                <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-slate-800 border border-slate-600 rounded-lg text-slate-200 hover:bg-slate-700 transition-colors">
+                  <Upload className="w-4 h-4" />
+                  Choose CSV
+                  <input type="file" accept=".csv" onChange={handleCSVImport} className="hidden" />
+                </label>
+                {importedRecipients.length > 0 && (
+                  <span className="text-sm text-cyan-400 flex items-center gap-1">
+                    <FileSpreadsheet className="w-4 h-4" /> {importedRecipients.length} recipient(s)
+                  </span>
+                )}
+              </div>
+              {importedRecipients.length > 0 && (
+                <div className="mt-3">
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Select recipient</label>
+                  <select
+                    value={selectedImportIndex ?? ''}
+                    onChange={(e) => selectRecipient(Number(e.target.value))}
+                    className="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                  >
+                    {importedRecipients.map((r, i) => (
+                      <option key={i} value={i}>
+                        Hi {r.firstName} — {r.email}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+
             <div className="space-y-4">
               <div>
                 <label htmlFor="recipient-email" className="block text-sm font-medium text-slate-300 mb-2">Recipient Email Address</label>
                 <input id="recipient-email" type="email" value={recipientEmail} onChange={(e) => setRecipientEmail(e.target.value)} placeholder="recipient@example.com" className="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none" />
               </div>
               <div>
+                <label htmlFor="client-name" className="block text-sm font-medium text-slate-300 mb-2">Greeting name (Hi ...)</label>
+                <input id="client-name" type="text" value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="Client Name" className="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none" />
+              </div>
+              <div>
                 <label htmlFor="email-subject" className="block text-sm font-medium text-slate-300 mb-2">Email Subject</label>
                 <input id="email-subject" type="text" value={emailSubject} onChange={(e) => setEmailSubject(e.target.value)} placeholder="Email subject" className="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none" />
               </div>
-              <Button onClick={sendEmail} disabled={isSending || !recipientEmail} className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white gap-2">
+              <Button
+                onClick={sendEmail}
+                disabled={isSending || (importedRecipients.length === 0 && !recipientEmail)}
+                className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white gap-2"
+              >
                 <Send className="w-4 h-4" />
-                {isSending ? 'Sending...' : 'Send Email'}
+                {isSending
+                  ? 'Sending...'
+                  : importedRecipients.length > 1
+                    ? `Send to all ${importedRecipients.length} recipients`
+                    : 'Send Email'}
               </Button>
             </div>
           </div>
