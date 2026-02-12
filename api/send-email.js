@@ -6,8 +6,8 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: false,
   auth: {
-    user: process.env.EMAIL_USER || 'sales@laskontech.com',
-    pass: process.env.EMAIL_PASSWORD || '6o/kQR1eF+Y'
+    user: process.env.EMAIL_USER ,
+    pass: process.env.EMAIL_PASSWORD
   },
   tls: {
     rejectUnauthorized: false
@@ -52,7 +52,7 @@ export default async function handler(req, res) {
     }
 
     const mailOptions = {
-      from: process.env.EMAIL_USER || 'sales@laskontech.com',
+      from: process.env.EMAIL_USER || 'nauman@laskontech.com',
       to: to,
       subject: subject || 'Email from Laskon Technologies',
       html: html
