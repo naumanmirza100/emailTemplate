@@ -10,9 +10,10 @@ import { SoftwareDevAIEmail } from '@/pages/SoftwareDevAIEmail';
 import { ProductInnovationEmail } from '@/pages/ProductInnovationEmail';
 import { SalesforceServicesEmail } from '@/pages/SalesforceServicesEmail';
 import { DentalEmail } from '@/pages/DentalEmail';
+import { SendEmailList } from '@/pages/SendEmailList';
 import { Home } from '@/pages/Home';
 import { Toaster } from '@/components/ui/toaster';
-import { Users, Gamepad2, ShieldCheck, Home as HomeIcon, Megaphone, Cloud, Code2, Lightbulb, CloudCog, Moon, Sun, Smile } from 'lucide-react';
+import { Users, Gamepad2, ShieldCheck, Home as HomeIcon, Megaphone, Cloud, Code2, Lightbulb, CloudCog, Moon, Sun, Smile, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 
@@ -76,6 +77,7 @@ function AppContent() {
               <NavItem to="/software-ai" icon={Code2} label="Software & AI" />
               <NavItem to="/product-innovation" icon={Lightbulb} label="Innovation" />
               <NavItem to="/salesforce" icon={CloudCog} label="Salesforce" />
+              <NavItem to="/send-email-list" icon={Mail} label="Send List" />
             </nav>
         </div>
       </header>
@@ -92,6 +94,7 @@ function AppContent() {
           <Route path="/software-ai" element={<SoftwareDevAIEmail />} />
           <Route path="/product-innovation" element={<ProductInnovationEmail />} />
           <Route path="/salesforce" element={<SalesforceServicesEmail />} />
+          <Route path="/send-email-list" element={<SendEmailList />} />
         </Routes>
         <Toaster />
       </main>
